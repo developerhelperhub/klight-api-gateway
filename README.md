@@ -1,0 +1,1 @@
+This project is developed as part of [Klight Service](https://github.com/developerhelperhub/klight-service). We’re building an API gateway for a microservices application with a focus on high performance and efficient request handling. The gateway is built using the OpenResty framework, which is based on Nginx and utilizes the Lua programming language.

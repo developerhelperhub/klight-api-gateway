@@ -1,0 +1,1 @@
+ngx.log(ngx.INFO, "Loaded access configuration!!!")
