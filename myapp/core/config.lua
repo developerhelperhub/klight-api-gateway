@@ -51,7 +51,8 @@ function config.load()
         config_dict:set("mongodb_db", config["mongodb"]["db"])
         config_dict:set("mongodb_username", config["mongodb"]["username"])
         config_dict:set("mongodb_password", config["mongodb"]["password"])
-
+        config_dict:set("mongodb_connection_pool_size", config["mongodb"]["connection-pool-size"])
+        
         config_dict:set("config_loaded", true)
 
         ngx.log(ngx.INFO, "Loaded Config!")

@@ -1,5 +1,6 @@
 local config = require("core.config")
 local mongo = require("core.mongo")
+local cleanup = require("core.cleanup")
 
 local config_dict = ngx.shared.config_dict
 
@@ -18,5 +19,7 @@ if mongo.is_pool_loaded() == false then
     mongo.create_pool()
 
 end
+
+-- cleanup.execute()
 
 ngx.log(ngx.INFO, "Intialized configuration!!!")

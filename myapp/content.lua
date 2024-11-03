@@ -1,7 +1,9 @@
 local reverse_proxy = require("core.reverse_proxy")
 
-local greeting = reverse_proxy.init()
+ngx.log(ngx.INFO, "Route requesting --------------")
 
-ngx.say(greeting)
+reverse_proxy.route()
 
-ngx.log(ngx.INFO, "Loaded content!!!")
+ngx.say("Klight API Gateway")
+
+ngx.log(ngx.INFO, "Routed request!!!")
