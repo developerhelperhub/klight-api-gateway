@@ -1,3 +1,6 @@
 mongodb:
-  host: "127.0.0.1"
-  port: 5432
+  host: "localhost"
+  port: 27017
+  db: klight-api-gateway
+  username: "klight-api-gateway"
+  password: "klight-api-gateway"

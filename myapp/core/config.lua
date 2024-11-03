@@ -1,15 +1,25 @@
 local yaml = require("lyaml")
+
 local config = {}
+
+local config_dict = ngx.shared.config_dict
+
+function config.is_load()
+    return config_dict:get("config_loaded")
+end
 
 function config.load()
 
     local app_env = os.getenv("APP_ENV")
     local config_file = "config.yaml"
-    local config_dict = ngx.shared.config_dict
 
-    config_dict:set("loaded", false)
+
+    config_dict:set("config_loaded", false)
 
     ngx.log(ngx.INFO, "Loading Config YAML...")
+
+    ngx.log(ngx.DEBUG, "LUA_PATH: ", package.path)
+    ngx.log(ngx.DEBUG, "LUA_CPATH: ", package.cpath)
 
     if not app_env then
         ngx.log(ngx.DEBUG, "APP_ENV is not set!")
@@ -38,8 +48,11 @@ function config.load()
 
         config_dict:set("mongodb_host", config["mongodb"]["host"])
         config_dict:set("mongodb_port", config["mongodb"]["port"])
+        config_dict:set("mongodb_db", config["mongodb"]["db"])
+        config_dict:set("mongodb_username", config["mongodb"]["username"])
+        config_dict:set("mongodb_password", config["mongodb"]["password"])
 
-        config_dict:set("loaded", true)
+        config_dict:set("config_loaded", true)
 
         ngx.log(ngx.INFO, "Loaded Config!")
 
