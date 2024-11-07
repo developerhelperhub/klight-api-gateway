@@ -19,7 +19,7 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "Bearer {{id_token}}",
+										"value": "Bearer {{keycloak_id_token}}",
 										"type": "text"
 									}
 								],
@@ -428,12 +428,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http:///127.0.0.1:8084/realms/mes-application/.well-known/openid-configuration",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/.well-known/openid-configuration",
 							"protocol": "http",
+							"host": [
+								"{{keycloak_host}}"
+							],
 							"path": [
-								"127.0.0.1:8084",
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								".well-known",
 								"openid-configuration"
 							]
@@ -450,7 +452,7 @@
 								"exec": [
 									"var jsonData = JSON.parse(pm.response.text());",
 									"",
-									"pm.environment.set(\"id_token\", jsonData[\"id_token\"]);"
+									"pm.environment.set(\"keycloak_id_token\", jsonData[\"id_token\"]);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -470,12 +472,12 @@
 								},
 								{
 									"key": "client_id",
-									"value": "openresty-api-gateway",
+									"value": "{{keycloak_client_id}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "{{keycloak_client_secret}}",
 									"type": "text"
 								},
 								{
@@ -485,29 +487,25 @@
 								},
 								{
 									"key": "username",
-									"value": "myuser",
+									"value": "{{keycloak_username}}",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "Admin",
+									"value": "{{keycloak_password}}",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8084/realms/mes-application/protocol/openid-connect/token",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/protocol/openid-connect/token",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"{{keycloak_host}}"
 							],
-							"port": "8084",
 							"path": [
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								"protocol",
 								"openid-connect",
 								"token"
@@ -526,39 +524,35 @@
 							"urlencoded": [
 								{
 									"key": "username",
-									"value": "myuser",
+									"value": "{{keycloak_username}}",
 									"type": "text"
 								},
 								{
 									"key": "client_id",
-									"value": "openresty-api-gateway",
+									"value": "{{keycloak_client_id}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "{{keycloak_client_secret}}",
 									"type": "text"
 								},
 								{
 									"key": "token",
-									"value": "{{id_token}}",
+									"value": "{{keycloak_id_token}}",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8084/realms/mes-application/protocol/openid-connect/token/introspect",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/protocol/openid-connect/token/introspect",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"{{keycloak_host}}"
 							],
-							"port": "8084",
 							"path": [
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								"protocol",
 								"openid-connect",
 								"token",
@@ -577,7 +571,7 @@
 								"exec": [
 									"var jsonData = JSON.parse(pm.response.text());",
 									"",
-									"pm.environment.set(\"id_token\", jsonData[\"id_token\"]);"
+									"pm.environment.set(\"keycloak_id_token\", jsonData[\"id_token\"]);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -597,12 +591,12 @@
 								},
 								{
 									"key": "client_id",
-									"value": "openresty-api-gateway",
+									"value": "{{keycloak_client_id}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "{{keycloak_client_secret}}",
 									"type": "text"
 								},
 								{
@@ -613,18 +607,14 @@
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8084/realms/mes-application/protocol/openid-connect/token",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/protocol/openid-connect/token",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"{{keycloak_host}}"
 							],
-							"port": "8084",
 							"path": [
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								"protocol",
 								"openid-connect",
 								"token"
@@ -642,7 +632,7 @@
 								"exec": [
 									"var jsonData = JSON.parse(pm.response.text());",
 									"",
-									"pm.environment.set(\"id_token\", jsonData[\"id_token\"]);"
+									"pm.environment.set(\"keycloak_id_token\", jsonData[\"id_token\"]);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -662,12 +652,12 @@
 								},
 								{
 									"key": "client_id",
-									"value": "openresty-api-gateway",
+									"value": "{{keycloak_client_id}}",
 									"type": "text"
 								},
 								{
 									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "{{keycloak_client_secret}}",
 									"type": "text"
 								},
 								{
@@ -683,18 +673,14 @@
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8084/realms/mes-application/protocol/openid-connect/auth",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/protocol/openid-connect/auth",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"{{keycloak_host}}"
 							],
-							"port": "8084",
 							"path": [
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								"protocol",
 								"openid-connect",
 								"auth"
@@ -710,17 +696,19 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Bearer {{id_token}}",
+								"value": "Bearer {{keycloak_id_token}}",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "http:///127.0.0.1:8084/realms/mes-application/protocol/openid-connect/userinfo",
+							"raw": "http://{{keycloak_host}}/realms/{{keycloak_relam}}/protocol/openid-connect/userinfo",
 							"protocol": "http",
+							"host": [
+								"{{keycloak_host}}"
+							],
 							"path": [
-								"127.0.0.1:8084",
 								"realms",
-								"mes-application",
+								"{{keycloak_relam}}",
 								"protocol",
 								"openid-connect",
 								"userinfo"

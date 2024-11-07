@@ -1,5 +1,7 @@
--- local mongo = require("core.mongo")
+local openid = require("openid.connect")
 
--- ngx.log(ngx.DEBUG, "Init access configuration ********************** ")
+ngx.log(ngx.DEBUG, "Init access configuration ********************** ")
 
--- ngx.log(ngx.DEBUG, "End access configuration!!!")
+openid.authenticate()
+
+ngx.log(ngx.DEBUG, "End access configuration!!!")
