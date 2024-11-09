@@ -5,3 +5,11 @@ mongodb:
   username: klight-api-gateway
   password: klight-api-gateway
   connection-pool-size: 1
+
+openid:
+  discovery_url: "http://127.0.0.1:8084/realms/klight-api-gateway/.well-known/openid-configuration"
+  validate_scope: false
+  client_id: klight-api-gateway-openid-connect
+  client_secret: TYxTbrLzFagelYymONmgmSVfueiJnckT
+  flow_type: introspection
+  introspection_endpoint: http://127.0.0.1:8084/realms/klight-api-gateway/protocol/openid-connect/token/introspect

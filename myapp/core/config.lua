@@ -8,6 +8,31 @@ function config.is_load()
     return config_dict:get("config_loaded")
 end
 
+local function mongodb_config(config)
+
+    config_dict:set("mongodb_host", config["mongodb"]["host"])
+    config_dict:set("mongodb_port", config["mongodb"]["port"])
+    config_dict:set("mongodb_db", config["mongodb"]["db"])
+    config_dict:set("mongodb_username", config["mongodb"]["username"])
+    config_dict:set("mongodb_password", config["mongodb"]["password"])
+    config_dict:set("mongodb_connection_pool_size", config["mongodb"]["connection-pool-size"])
+
+    ngx.log(ngx.INFO, "Loaded Mongo Config!")
+
+end 
+
+local function openid_config(config)
+
+    config_dict:set("openid_discovery_url", config["openid"]["discovery_url"])
+    config_dict:set("openid_validate_scope", config["openid"]["validate_scope"])
+    config_dict:set("openid_client_id", config["openid"]["client_id"])
+    config_dict:set("openid_client_secret", config["openid"]["client_secret"])
+    config_dict:set("openid_flow_type", config["openid"]["flow_type"])
+    config_dict:set("openid_introspection_endpoint", config["openid"]["introspection_endpoint"])
+
+    ngx.log(ngx.INFO, "Loaded OpenId Config!")
+end 
+
 function config.load()
 
     local app_env = os.getenv("APP_ENV")
@@ -46,12 +71,9 @@ function config.load()
 
         local config = yaml.load(content)
 
-        config_dict:set("mongodb_host", config["mongodb"]["host"])
-        config_dict:set("mongodb_port", config["mongodb"]["port"])
-        config_dict:set("mongodb_db", config["mongodb"]["db"])
-        config_dict:set("mongodb_username", config["mongodb"]["username"])
-        config_dict:set("mongodb_password", config["mongodb"]["password"])
-        config_dict:set("mongodb_connection_pool_size", config["mongodb"]["connection-pool-size"])
+        mongodb_config(config)
+
+        openid_config(config)
         
         config_dict:set("config_loaded", true)
 
