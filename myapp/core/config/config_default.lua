@@ -1,10 +1,13 @@
 local yaml = require("lyaml")
 local config_mongo = require("core.config.config_mongo")
 local config_openid = require("core.config.config_openid")
+local exception = require("util.exception")
 
 local config = {}
 
 local config_dict = ngx.shared.config_dict
+
+local ERR_MESS_CONFIG = "Config failed"
 
 function config.is_load()
     return config_dict:get("config_default_loaded")
@@ -33,8 +36,7 @@ function config.load(app_env)
 
     if not file then
 
-        ngx.log(ngx.ERR, "Not found the default configuration!")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        exception.error(ngx.HTTP_INTERNAL_SERVER_ERROR, ERR_MESS_CONFIG, "Not found the default configuration!")
 
     else
 

@@ -1,6 +1,8 @@
+
 local config = require("core.config")
 local mongo = require("core.mongo")
 local cleanup = require("core.cleanup")
+local global_handler = require("core.global_handler")
 
 local config_dict = ngx.shared.config_dict
 
@@ -9,20 +11,26 @@ ngx.log(ngx.DEBUG, "LUA_CPATH: ", package.cpath)
 
 ngx.log(ngx.INFO, "Intializing configuration!!!")
 
-ngx.log(ngx.DEBUG, "Check configuration :", config.is_load())
+local function main()
 
-if config.is_load() == nil then
+    ngx.log(ngx.DEBUG, "Load check configuration :", config.is_load())
 
-    config.load()
+    if config.is_load() == nil then
 
-end 
+        config.load()
 
-if mongo.is_pool_loaded() == false then
-    
-    mongo.create_pool()
+    end 
+
+    if mongo.is_pool_loaded() == false then
+        
+        mongo.create_pool()
+
+    end
+
+    -- cleanup.execute()
+
+    ngx.log(ngx.INFO, "Intialized configuration!!!")
 
 end
 
--- cleanup.execute()
-
-ngx.log(ngx.INFO, "Intialized configuration!!!")
+global_handler.execute("init", main)

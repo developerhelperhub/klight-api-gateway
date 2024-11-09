@@ -1,6 +1,7 @@
 local mongo = require("core.mongo")
 local mongo_client = require "mongo"
 local cjson = require "cjson"
+local exception = require("util.exception")
 
 local service = {}
 local collection_name ="service"
@@ -29,7 +30,6 @@ function service.list()
 
     if not success then
         ngx.log(ngx.ERR, collection_name .. " not find documents: ", result)
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     else
         ngx.log(ngx.DEBUG, "Found documents! success : ", success)
     end
@@ -67,7 +67,7 @@ function service.find(service_path)
     
     local query = { path = service_path}
 
-    -- ngx.log(ngx.DEBUG, "service query : ", cjson.encode(query))
+    ngx.log(ngx.DEBUG, "service query : ", cjson.encode(query))
 
     local success, result = pcall(function()
         return collection:findOne(query):value()
@@ -75,7 +75,7 @@ function service.find(service_path)
     
     if not success then
         ngx.log(ngx.ERR, collection_name .. " not find document: ", result)
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        return nil
     else
         ngx.log(ngx.DEBUG, "Found document! success : ", success)
     end

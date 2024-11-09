@@ -1,11 +1,24 @@
 local openid = require("openid.introspection")
 local cjson = require "cjson"
+local exception = require("util.exception")
 
 connect = {}
 
 local config_dict = ngx.shared.config_dict
 
 local config  = {}
+
+local function validation_error(details)
+    exception.exception(ngx.HTTP_INTERNAL_SERVER_ERROR, "OpenID validation", details)
+end
+
+local function failed_error(details)
+    exception.exception(ngx.HTTP_INTERNAL_SERVER_ERROR, "OpenID failed", details)
+end
+
+local function authenticate_failed_error(details)
+    exception.exception(ngx.HTTP_FORBIDDEN, "Authorization failed", details)
+end
 
 local function validate() 
 
@@ -16,28 +29,23 @@ local function validate()
     config.flow_type = ngx.shared.config_dict:get("openid_flow_type")
 
     if not config.discovery_url then
-        ngx.log(ngx.ERR, "openid discovery_url not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("openid discovery_url not configured")
     end
 
     if not config.validate_scope == nil then
-        ngx.log(ngx.ERR, "openid validate_scope not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("openid validate_scope not configured")
     end
 
     if not config.client_id then
-        ngx.log(ngx.ERR, "openid client_id not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("openid client_id not configured")
     end
 
     if not config.client_secret then
-        ngx.log(ngx.ERR, "openid client_secret not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("openid client_secret not configured")
     end
 
     if not config.flow_type then
-        ngx.log(ngx.ERR, "openid flow_type not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("openid flow_type not configured")
     end
 
 
@@ -74,25 +82,15 @@ function connect.authenticate()
 
     else
 
-        ngx.log(ngx.ERR, "Flow type not support : ", config.flow_type)
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        failed_error("Flow type not support : ", config.flow_type)
 
     end
 
     if status.error then
-        
-        ngx.status = ngx.HTTP_FORBIDDEN
 
-        ngx.log(ngx.ERR, "Access denied!")
+        authenticate_failed_error(status.error)
 
-        local out_response = {
-            message = "Access denied!",
-            error = status.error
-        }
-        
-        ngx.say(cjson.encode(out_response))
-
-        ngx.exit(ngx.HTTP_FORBIDDEN)
+        return 
     end
 
     ngx.req.set_header("X-User", status.response.sub)  -- you can pass user info to the upstream service

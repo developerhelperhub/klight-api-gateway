@@ -3,8 +3,11 @@ local http = require "resty.http"  -- OpenResty's HTTP client library
 local cjson = require "cjson"
 local repo_service = require("repository.service")
 local service = require("repository.service")
+local exception = require("util.exception")
 
 local reverse_proxy = {}
+
+local ERR_MESS_SERVICE_NOT_FOUND = "Service not found"
 
 local function find_service(path)
     
@@ -16,12 +19,7 @@ local function find_service(path)
 
         return item
     else
-        ngx.status = ngx.HTTP_NOT_FOUND
-        
-        ngx.log(ngx.ERR, "404 Not Found: No matching upstream.")
-
-        ngx.say("404 Not Found: No matching upstream.")
-        ngx.exit(ngx.HTTP_NOT_FOUND)
+        exception.exception(ngx.HTTP_NOT_FOUND, ERR_MESS_SERVICE_NOT_FOUND, "No match upstream.")
     end
 
 end
@@ -77,18 +75,12 @@ function reverse_proxy.route()
     ngx.header.content_type = "application/json"
 
     if not res then
-        ngx.status = ngx.HTTP_NOT_FOUND
         
-        ngx.log(ngx.ERR, "Upstream service han an error!")
+        ngx.log(ngx.ERR, "Upstream error : ", err)
 
-        local out_response = {
-            message = "Upstream service han an error!",
-            error = err
-        }
+        exception.exception(ngx.HTTP_NOT_FOUND, "Upstream failed", err)
 
-        ngx.say(cjson.encode(out_response))
-
-        return ngx.exit(ngx.HTTP_NOT_FOUND)
+        return ngx.HTTP_NOT_FOUND
     end
 
     for k, v in pairs(res.headers) do
