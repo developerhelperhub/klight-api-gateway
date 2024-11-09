@@ -1,6 +1,7 @@
 local mongo_client = require "mongo"
 local cjson = require "cjson"
 local bcrypt = require "bcrypt"
+local exception = require("util.exception")
 
 local mongo = {}
 
@@ -17,6 +18,14 @@ local mongodb_username = nil
 local mongodb_password = nil
 local mongodb_connection_pool_size = nil
 
+local function validation_error(details)
+    exception.error(ngx.HTTP_INTERNAL_SERVER_ERROR, "Mongo validation", details)
+end
+
+local function connection_error(details)
+    exception.error(ngx.HTTP_INTERNAL_SERVER_ERROR, "Mongo connect failed", details)
+end
+
 local function validate_config() 
     mongodb_host = config_dict:get("mongodb_host")
     mongodb_port = config_dict:get("mongodb_port")
@@ -26,28 +35,23 @@ local function validate_config()
     mongodb_connection_pool_size = config_dict:get("mongodb_connection_pool_size")
 
     if not mongodb_host then
-        ngx.log(ngx.ERR, "mongodb_host not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("mongodb_host not configured")
     end
 
     if not mongodb_port then
-        ngx.log(ngx.ERR, "mongodb_port not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("mongodb_port not configured")
     end
 
     if not mongodb_db then
-        ngx.log(ngx.ERR, "mongodb_db not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("mongodb_db not configured")
     end
 
     if not mongodb_username then
-        ngx.log(ngx.ERR, "mongodb_username not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("mongodb_username not configured")
     end
 
     if not mongodb_password then
-        ngx.log(ngx.ERR, "mongodb_password not configured")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        validation_error("mongodb_password not configured")
     end
 
     if not mongodb_connection_pool_size then
@@ -77,8 +81,7 @@ function mongo.create_pool()
     end
 
     if not global_var_mongo_pool then
-        ngx.log(ngx.ERR, "Not load pool.")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        connection_error("Not load pool.")
     end
 
     ngx.log(ngx.INFO, "Created the mongo pool : ", mongodb_connection_pool_size)
@@ -96,8 +99,7 @@ end
 function mongo.get_db()
 
     if not global_var_mongo_pool then
-        ngx.log(ngx.ERR, "Not load pool.")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        connection_error(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
 
     local random_index = math.random(1, #global_var_mongo_pool)
@@ -107,8 +109,7 @@ function mongo.get_db()
     local db = global_var_mongo_pool[random_index]
 
     if not db then
-        ngx.log(ngx.ERR, "Connection not found db in the pool")
-        ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+        connection_error("Connection not found db in the pool")
     end
 
     return db

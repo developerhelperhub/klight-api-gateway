@@ -1,0 +1,1 @@
+ERR_MESS_SERVICE_NOT_FOUND = "Service not found"
