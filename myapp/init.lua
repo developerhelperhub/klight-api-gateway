@@ -4,6 +4,9 @@ local cleanup = require("core.cleanup")
 
 local config_dict = ngx.shared.config_dict
 
+ngx.log(ngx.DEBUG, "LUA_PATH: ", package.path)
+ngx.log(ngx.DEBUG, "LUA_CPATH: ", package.cpath)
+
 ngx.log(ngx.INFO, "Intializing configuration!!!")
 
 ngx.log(ngx.DEBUG, "Check configuration :", config.is_load())
