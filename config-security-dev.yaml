@@ -2,6 +2,6 @@ mongodb:
   username: klight-api-gateway
   password: klight-api-gateway
 
-openid:
-  client_id: klight-api-gateway-openid-connect
-  client_secret: TYxTbrLzFagelYymONmgmSVfueiJnckT
+# openid:
+#   client_id: klight-api-gateway-openid-connect
+#   client_secret: TYxTbrLzFagelYymONmgmSVfueiJnckT

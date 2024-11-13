@@ -1,7 +1,8 @@
 local openidc = require("resty.openidc")
 local exception = require("util.exception")
+local cjson = require "cjson"
 
-openid = {}
+local openid = {}
 
 local config_dict = ngx.shared.config_dict
 
@@ -25,6 +26,8 @@ end
 
 function openid.introspection(opts) 
 
+    validate()
+    
     opts.introspection_endpoint = config.introspection_endpoint
     opts.introspection_expiry_claim = "exp"
 

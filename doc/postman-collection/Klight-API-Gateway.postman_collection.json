@@ -178,6 +178,32 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Callback",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:8080/klight-api-gateway/auth/callback",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"klight-api-gateway",
+										"auth",
+										"callback"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -667,7 +693,12 @@
 								},
 								{
 									"key": "redirect_uri",
-									"value": "http://localhost:8080",
+									"value": "http://localhost:8080/callback",
+									"type": "text"
+								},
+								{
+									"key": "response_type",
+									"value": "code",
 									"type": "text"
 								}
 							]

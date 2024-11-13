@@ -1,8 +1,9 @@
-local openid = require("openid.introspection")
+local openid_introspection = require("openid.introspection")
+local openid_authorisation_code = require("openid.authorisation_code")
 local cjson = require "cjson"
 local exception = require("util.exception")
 
-connect = {}
+local connect = {}
 
 local config_dict = ngx.shared.config_dict
 
@@ -22,18 +23,13 @@ end
 
 local function validate() 
 
-    config.discovery_url = ngx.shared.config_dict:get("openid_discovery_url")
-    config.validate_scope = ngx.shared.config_dict:get("openid_validate_scope")
-    config.client_id = ngx.shared.config_dict:get("openid_client_id")
-    config.client_secret = ngx.shared.config_dict:get("openid_client_secret")
-    config.flow_type = ngx.shared.config_dict:get("openid_flow_type")
+    config.discovery_url = config_dict:get("openid_discovery_url")
+    config.client_id = config_dict:get("openid_client_id")
+    config.client_secret = config_dict:get("openid_client_secret")
+    config.flow_type = config_dict:get("openid_flow_type")
 
     if not config.discovery_url then
         validation_error("openid discovery_url not configured")
-    end
-
-    if not config.validate_scope == nil then
-        validation_error("openid validate_scope not configured")
     end
 
     if not config.client_id then
@@ -50,7 +46,6 @@ local function validate()
 
 
     ngx.log(ngx.DEBUG, "discovery_url: ", config.discovery_url)
-    ngx.log(ngx.DEBUG, "validate_scope: ",config.validate_scope)
     ngx.log(ngx.DEBUG, "flow_type: ", config.flow_type)
     ngx.log(ngx.DEBUG, "client_id: ", config.client_id and "************" or "nil")
     ngx.log(ngx.DEBUG, "client_secret: ", config.client_secret and "************" or "nil")
@@ -59,6 +54,16 @@ local function validate()
 end
 
 function connect.authenticate()
+
+    ngx.log(ngx.DEBUG, "OpenID configured : ", config_dict:get("openid_configured"))
+
+    if config_dict:get("openid_configured") == false then
+
+        ngx.log(ngx.INFO, "OpenID not configured!!!")
+
+        return
+
+    end
 
     ngx.log(ngx.INFO, "Authorizing .........")
 
@@ -70,7 +75,6 @@ function connect.authenticate()
         client_secret = config.client_secret,
         token_signing_alg_values_supported = {"RS256"},
         ssl_verify = "no",
-        validate_scope = config.validate_scope,
         proxy_opts = nil  -- No proxy needed
     }
 
@@ -78,7 +82,11 @@ function connect.authenticate()
 
     if(config.flow_type == "introspection") then
 
-        status = openid.introspection(opts)
+        status = openid_introspection.introspection(opts)
+
+    elseif(config.flow_type == "authorization_code") then
+
+        status = openid_authorisation_code.authenticate(opts)
 
     else
 
@@ -96,9 +104,8 @@ function connect.authenticate()
     ngx.req.set_header("X-User", status.response.sub)  -- you can pass user info to the upstream service
     
     ngx.log(ngx.DEBUG, "User: ", status.response.sub)
-    ngx.log(ngx.DEBUG, "Token is valid. Roles: ", require("cjson").encode(status.response.realm_access.roles))
 
-    if status.response.realm_access.roles ~= nil then
+    if status.response.realm_access ~= nil and status.response.realm_access.roles ~= nil then
         
         ngx.req.set_header("X-Roles", table.concat(status.response.realm_access.roles, ","))  -- example passing roles
     end

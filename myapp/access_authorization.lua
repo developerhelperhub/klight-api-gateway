@@ -4,7 +4,7 @@ local global_handler = require("core.global_handler")
 
 local function main()
 
-    ngx.log(ngx.DEBUG, "Init access configuration ********************** ")
+    ngx.log(ngx.DEBUG, "Init `access_authorization` configuration ********************** ")
 
     openid.authenticate()
 
@@ -14,8 +14,8 @@ local function main()
 
     ngx.log(ngx.INFO, "Routed request!!!")
 
-    ngx.log(ngx.DEBUG, "End access configuration!!!")
+    ngx.log(ngx.DEBUG, "End `access_authorization` configuration!!!")
 
 end
 
-global_handler.execute("access", main)
+global_handler.execute("access_authorization", main)

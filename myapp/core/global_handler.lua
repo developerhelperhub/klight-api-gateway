@@ -7,21 +7,17 @@ local function global_error_handler(error_message)
 
     local err = exception.convert_message(error_message)
     
-    ngx.log(ngx.ERR, "Handled error exit: ", err.exit, ", code: ", err.code, ", message: ", err.message, ", details: ", err.details)
+    if error_message:find("exit:") and error_message:find("code:") and error_message:find("message:") then
+        ngx.log(ngx.ERR, "Handled error exit: ", err.exit, ", code: ", err.code, ", message: ", err.message, ", details: ", err.details)
+    else
+        ngx.log(ngx.ERR, "Unhandled error: ", error_message)
 
-    -- local ok, err = pcall(exception.convert_message(error_message))
-
-    -- if not ok then
-    --     ngx.log(ngx.ERR, "Unhandled error : ", err)
-
-    --     err = {
-    --         exit = 1,
-    --         message = "Unhandled error",
-    --         details = error_message
-    --     }
-    -- else
-    --     ngx.log(ngx.ERR, "Handled error exit: ", err.exit, ", code: ", err.code, ", message: ", err.message, ", details: ", err.details)
-    -- end
+        err = {
+            exit = 1,
+            message = "Unhandled error",
+            details = error_message
+        }
+    end
 
     ngx.log(ngx.ERR, debug.traceback())
 

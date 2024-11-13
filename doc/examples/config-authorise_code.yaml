@@ -11,7 +11,7 @@ openid:
   client_id: klight-api-gateway-openid-connect-authorize-code
   client_secret: iO2tmN0XvGfG7RpbANewVB78ZTZMPylP
   flow_type: authorization_code
-  validate_scope: true
+  validate_scope: false
   scope: "openid email profile"
   redirect_uri: "/klight-api-gateway/auth/callback"
   redirect_uri_scheme: http
