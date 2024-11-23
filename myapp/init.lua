@@ -13,8 +13,6 @@ ngx.log(ngx.INFO, "Intializing configuration!!!")
 
 local function main()
 
-    ngx.log(ngx.DEBUG, "Load check configuration :", config.is_load())
-
     if config.is_load() == nil then
 
         config.load()
