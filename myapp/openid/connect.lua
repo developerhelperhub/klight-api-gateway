@@ -1,7 +1,8 @@
 local openid_introspection = require("openid.introspection")
 local openid_authorisation_code = require("openid.authorisation_code")
-local cjson = require "cjson"
 local exception = require("util.exception")
+
+local cjson = require "cjson"
 
 local connect = {}
 
@@ -99,6 +100,12 @@ function connect.authenticate()
         authenticate_failed_error(status.error)
 
         return 
+    end
+
+    if(config.flow_type == "authorization_code") then
+
+        openid_authorisation_code.set_session(status.response)
+        
     end
 
     ngx.req.set_header("X-User", status.response.sub)  -- you can pass user info to the upstream service

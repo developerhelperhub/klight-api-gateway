@@ -15,3 +15,12 @@ openid:
   scope: "openid email profile"
   redirect_uri: "/klight-api-gateway/auth/callback"
   redirect_uri_scheme: http
+  session_life_time: 3600
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  
+session:
+  secure: false
+  httponly: true

@@ -1,5 +1,7 @@
 local openidc = require("resty.openidc")
 local exception = require("util.exception")
+local redis_session = require("core.redis_session")
+
 local cjson = require "cjson"
 
 local openid = {}
@@ -18,7 +20,7 @@ local function validate_auth()
     config.scope = config_dict:get("openid_scope")
     config.redirect_uri = config_dict:get("openid_redirect_uri")
     config.redirect_uri_scheme = config_dict:get("openid_redirect_uri_scheme")
-
+    
     if not config.validate_scope == nil then
         validation_error("openid validate_scope not configured")
     end
@@ -140,6 +142,34 @@ function openid.redirect_authenticate()
     ngx.log(ngx.DEBUG, "redirect res: ", cjson.encode(res))
     ngx.log(ngx.INFO, "Authentication redirected!")
 
+end
+
+local function validate_session()
+
+    config.session_life_time = config_dict:get("openid_session_life_time")
+
+    if not config.session_life_time == nil then
+        validation_error("openid session_life_time not configured")
+    end
+
+    ngx.log(ngx.DEBUG, "session_life_time: ", config.session_life_time)
+
+end
+
+function openid.set_session(response) 
+
+    ngx.log(ngx.DEBUG, "Create redis session authorisation_code...")
+
+    validate_session()
+
+    local session = redis_session.start("openid_authorisation_code", config.session_life_time)
+
+    session.data.id_token = response.id_token
+    session.data.access_token = response.access_token
+
+    session:save()
+
+    ngx.log(ngx.INFO, "Set redis session authorisation_code")
 end
 
 return openid
