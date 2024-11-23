@@ -1,5 +1,8 @@
 local openidc = require("resty.openidc")
 local exception = require("util.exception")
+local r_session = require("openid.session")
+local util = require("openid.util")
+local http = require "resty.http"
 local cjson = require "cjson"
 
 local openid = {}
@@ -18,7 +21,10 @@ local function validate_auth()
     config.scope = config_dict:get("openid_scope")
     config.redirect_uri = config_dict:get("openid_redirect_uri")
     config.redirect_uri_scheme = config_dict:get("openid_redirect_uri_scheme")
-
+    config.refresh_token_lifetime = config_dict:get("openid_refresh_token_lifetime")
+    config.access_token_lifetime = config_dict:get("openid_access_token_lifetime")
+    config.token_validation_type = config_dict:get("token_validation_type")
+    
     if not config.validate_scope == nil then
         validation_error("openid validate_scope not configured")
     end
@@ -35,34 +41,183 @@ local function validate_auth()
         validation_error("openid redirect_uri_scheme not configured")
     end
 
+    if not config.refresh_token_lifetime == nil then
+        validation_error("openid refresh_token_lifetime not configured")
+    end
+
+    if not config.access_token_lifetime == nil then
+        validation_error("openid access_token_lifetime not configured")
+    end
+
+    if not config.token_validation_type == nil then
+        validation_error("openid token_validation_type not configured")
+    end
+
+    if config.token_validation_type == "introspection" then
+
+        config.token_validation_intro_endpoint = config_dict:get("token_validation_intro_endpoint")
+
+        if not config.token_validation_intro_endpoint == nil then
+            validation_error("openid token_validation_intro_endpoint not configured")
+        end
+
+    else
+        validation_error("openid token type " .. config.token_validation_type .. " not supported!")
+    end
+
     ngx.log(ngx.DEBUG, "validate_scope: ", config.validate_scope)
     ngx.log(ngx.DEBUG, "scope: ", config.scope)
     ngx.log(ngx.DEBUG, "redirect_uri: ", config.redirect_uri)
     ngx.log(ngx.DEBUG, "redirect_uri_scheme: ", config.redirect_uri_scheme)
+    ngx.log(ngx.DEBUG, "refresh_token_lifetime: ", config.refresh_token_lifetime)
+    ngx.log(ngx.DEBUG, "access_token_lifetime: ", config.access_token_lifetime)
+    ngx.log(ngx.DEBUG, "token_validation_type: ", config.token_validation_type)
 
 end
 
+local function find_user(session, connect_config) 
 
-function openid.authenticate(opts) 
+    local access_token = nil
+    local refresh_token = nil
+    local access_token_expiration = nil
 
-    validate_auth()
+    local found = false
+    
+    local user = session:get("user")
+    local sub = nil
+
+    if user then
+
+        ngx.log(ngx.INFO, "User found!")
+        ngx.log(ngx.DEBUG, "user: ", cjson.encode(user))
+
+        sub = user.sub
+        access_token = util.get_access_token(sub)
+        access_token_expiration = util.get_access_token_expiration(sub)
+        refresh_token = util.get_refresh_token(sub)
+
+        if (access_token == nil and refresh_token == nil) or refresh_token == nil then
+            
+            ngx.log(ngx.INFO, "Token not found in redis")
+
+            found = false
+        else
+
+            ngx.log(ngx.INFO, "Token found in redis")
+
+            found = true
+        end
+    else 
+        ngx.log(ngx.INFO, "User not found!")
+
+        found = false
+    end
+
+    return {
+        found = found,
+        sub = sub,
+        access_token_expiration = access_token_expiration,
+        access_token = access_token,
+        refresh_token = refresh_token
+    }
+end
+
+local function authenticate_user(session, user, opts) 
+
+    ngx.log(ngx.DEBUG, "Inital authentication!")
 
     opts.validate_scope = config.validate_scope
-    opts.scope = config.scope
+    opts.scope = config.scope .. " offline_access"
     opts.redirect_uri_scheme = config.redirect_uri_scheme
+    opts.grant_type="authorization_code"
     opts.redirect_uri = config.redirect_uri
-    
+
     if opts.validate_scope == false then
         opts.scope = nil 
     end
 
-    -- ngx.log(ngx.DEBUG, "OpenID configurations : ", cjson.encode(opts))
+    opts.debug = true
 
-    local res, err = openidc.authenticate(opts)
+    -- openidc.set_logging(nil, { DEBUG = ngx.INFO })
+
+    local res, err, target, session = openidc.authenticate(opts, nil, nil, session)
+
+    if not err then
+
+        ngx.log(ngx.DEBUG, "Session data authenticated =============== ")
+        ngx.log(ngx.DEBUG, "authenticated: ", session:get("authenticated"))
+
+        -- ngx.log(ngx.DEBUG, "access_token_expiration: ", session:get("access_token_expiration"))
+        -- ngx.log(ngx.DEBUG, "refresh_token: ", session:get("refresh_token"))
+        -- ngx.log(ngx.DEBUG, "enc_id_token: ", session:get("enc_id_token"))
+        -- ngx.log(ngx.DEBUG, "access_token: ", session:get("access_token"))
+        
+        user.sub = session:get("user").sub
+        user.access_token = session:get("access_token")
+        user.access_token_expiration = session:get("access_token_expiration")
+        user.refresh_token = session:get("refresh_token")
+        
+        session.data.user = session:get("user")
+        
+        r_session.save(session)
+
+        util.redis_save_token(user, config)
+    else
+
+        ngx.log(ngx.ERR, "Error in authentiction: ", err)
+
+        validation_error("Error in authentiction!")
+    end
+
+    user.res = res
+    user.err = err
+
+    return user
+end
+
+function openid.authenticate(opts, connect_config) 
+
+    validate_auth()
+
+    local cookies = ngx.var.http_cookie
+    local uri = ngx.var.uri
+    
+    ngx.log(ngx.INFO, "request uri : ", uri)
+
+    local session = r_session.start(connect_config)
+    local user = find_user(session, connect_config)
+
+    if user.found == false then
+        
+        ngx.log(ngx.DEBUG, "Token not found!")
+
+        user = authenticate_user(session, user, opts)
+
+    else
+
+        ngx.log(ngx.DEBUG, "Token found!")
+        ngx.log(ngx.DEBUG, "Token validation type :", config.token_validation_type)
+
+        -- if config.token_validation_type == "introspection" then
+        
+        --     user = token_validation_introspection(user, connect_config)
+
+        -- end
+
+        -- if user.err then
+
+        --     ngx.log(ngx.INFO, "Token is invalid and logout!")
+
+        --     user = logout(user, connect_config)
+
+        --     user.res = nil
+        --     user.err = "Logout the session!"
+        -- end
+    end
 
     return {
-        response = res,
-        error = err
+        response = user.res,
+        error = user.err
     }
 
 end
@@ -106,6 +261,7 @@ end
 
 function openid.redirect_authenticate() 
 
+    ngx.log(ngx.DEBUG, "OpenID redirect authentication...")
     ngx.log(ngx.DEBUG, "OpenID configured : ", config_dict:get("openid_configured"))
 
     if config_dict:get("openid_configured") == false then
@@ -122,13 +278,19 @@ function openid.redirect_authenticate()
         discovery = config.discovery_url,
         client_id = config.client_id,
         client_secret = config.client_secret,
-        redirect_uri_path = config.redirect_uri,
+        redirect_uri = config.redirect_uri,
         redirect_uri_scheme = config.redirect_uri_scheme
     }
 
     -- ngx.log(ngx.DEBUG, "OpenID configurations : ", cjson.encode(opts))
 
-    local res, err = openidc.authenticate(opts)
+    ngx.log(ngx.DEBUG, "redirect_uri : ", config.redirect_uri)
+
+    -- openidc.set_logging(nil, { DEBUG = ngx.INFO })
+
+    local session = r_session.start(config)
+    local user = find_user(session, config)
+    local res, err = openidc.authenticate(opts, nil, "deny", session)
 
     if err then
 
@@ -141,5 +303,6 @@ function openid.redirect_authenticate()
     ngx.log(ngx.INFO, "Authentication redirected!")
 
 end
+
 
 return openid

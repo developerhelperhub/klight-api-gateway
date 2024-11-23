@@ -11,4 +11,5 @@ openid:
   client_id: klight-api-gateway-openid-connect
   client_secret: TYxTbrLzFagelYymONmgmSVfueiJnckT
   flow_type: introspection
+  ssl_verify: "no"
   introspection_endpoint: http://127.0.0.1:8084/realms/klight-api-gateway/protocol/openid-connect/token/introspect
