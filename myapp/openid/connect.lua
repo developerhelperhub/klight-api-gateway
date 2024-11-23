@@ -1,7 +1,8 @@
 local openid_introspection = require("openid.introspection")
 local openid_authorisation_code = require("openid.authorisation_code")
-local cjson = require "cjson"
 local exception = require("util.exception")
+
+local cjson = require "cjson"
 
 local connect = {}
 
@@ -101,14 +102,14 @@ function connect.authenticate()
         return 
     end
 
-    ngx.req.set_header("X-User", status.response.sub)  -- you can pass user info to the upstream service
-    
-    ngx.log(ngx.DEBUG, "User: ", status.response.sub)
+    -- ngx.req.set_header("X-User", status.response.sub)  -- you can pass user info to the upstream service
 
-    if status.response.realm_access ~= nil and status.response.realm_access.roles ~= nil then
+    -- ngx.log(ngx.DEBUG, "User: ", status.response.sub)
+
+    -- if status.response.realm_access ~= nil and status.response.realm_access.roles ~= nil then
         
-        ngx.req.set_header("X-Roles", table.concat(status.response.realm_access.roles, ","))  -- example passing roles
-    end
+    --     ngx.req.set_header("X-Roles", table.concat(status.response.realm_access.roles, ","))  -- example passing roles
+    -- end
  
     ngx.log(ngx.INFO, "Authorized!")
 

@@ -1,4 +1,7 @@
 local exception = require("util.exception")
+local release_handler = require("core.release_resouce_handler")
+
+
 local cjson = require "cjson"
 
 local global_handler =  {}
@@ -21,6 +24,8 @@ local function global_error_handler(error_message)
 
     ngx.log(ngx.ERR, debug.traceback())
 
+    pcall(release_handler.release_handler)
+    
     return err
 
 end

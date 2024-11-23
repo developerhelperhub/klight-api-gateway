@@ -44,6 +44,10 @@ function config.config(name, config)
             config_dict:set("openid_redirect_uri_scheme", openid["redirect_uri_scheme"])
         end
 
+        if openid["session_life_time"] ~= nil then
+            config_dict:set("openid_session_life_time", openid["session_life_time"])
+        end
+
         config_dict:set("openid_configured", true)
 
         ngx.log(ngx.INFO, "Loaded OpenId Config : ", name, "!")

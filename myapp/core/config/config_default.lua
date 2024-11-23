@@ -1,6 +1,9 @@
 local yaml = require("lyaml")
+
 local config_mongo = require("core.config.config_mongo")
 local config_openid = require("core.config.config_openid")
+local config_redis = require("core.config.config_redis")
+
 local exception = require("util.exception")
 
 local config = {}
@@ -46,8 +49,8 @@ function config.load(app_env)
         local config = yaml.load(content)
 
         config_mongo.config("default", config)
-
         config_openid.config("default", config)
+        config_redis.config("default", config)
         
         config_dict:set("config_default_loaded", true)
 
