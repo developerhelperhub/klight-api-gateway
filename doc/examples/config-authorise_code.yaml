@@ -11,7 +11,7 @@ openid:
   client_id: klight-api-gateway-openid-connect-authorize-code
   client_secret: iO2tmN0XvGfG7RpbANewVB78ZTZMPylP
   flow_type: authorization_code
-  ssl_verify: "no"
+  ssl_verify: "yes"
   session_secret: "jjjjOjjl*nnnPPPPP767"
   token_validation: 
     type: introspection
@@ -21,7 +21,7 @@ openid:
     validate_scope: true
     scope: "openid email profile"
     redirect_uri: "/oauth2/callback"
-    redirect_uri_scheme: http
+    redirect_uri_scheme: https
 
 redis:
   host: 127.0.0.1

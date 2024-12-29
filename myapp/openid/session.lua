@@ -42,6 +42,10 @@ function sess.start(config)
         validation_error("Failed to load session library!")
     end
 
+    local cookie_secure = config.ssl_verify == "yes" and true or false
+
+    ngx.log(ngx.DEBUG, "cookie_secure :", cookie_secure)
+
     local session, err, exists, refreshed = r_session.start({
         audience = config.client_id,
         storage = "redis",
@@ -52,7 +56,7 @@ function sess.start(config)
             timeout = sess_config.redis_connection_timeout, 
         },
         cookie_name = "session",  -- Name of the cookie
-        cookie_secure = false,       -- Set true for HTTPS
+        cookie_secure = cookie_secure,       -- Set true for HTTPS
         cookie_http_only = true,      -- Prevent access from JavaScript
         cookie_same_site = "Lax",     -- Protect against CSRF
         cookie_path = "/"
