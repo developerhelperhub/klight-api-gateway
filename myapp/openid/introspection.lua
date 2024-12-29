@@ -43,40 +43,5 @@ function openid.introspection(opts, config)
 
 end
 
-function openid.introspection(user, connect_config)
-
-    ngx.log(ngx.DEBUG, "Token validating .... [introspection]")
-
-    local opts = {
-        discovery = connect_config.discovery_url,
-        client_id = connect_config.client_id,
-        client_secret = connect_config.client_secret,
-        token_signing_alg_values_supported = connect_config.token_signing_alg_values_supported,
-        ssl_verify = connect_config.ssl_verify,
-        proxy_opts = connect_config.proxy_opts,
-        introspection_endpoint = config.token_validation_intro_endpoint,
-        introspection_expiry_claim = "exp"
-    }
-
-    local header_value = "Bearer " .. user.access_token
-
-    -- ngx.log(ngx.DEBUG, "Authorization header_value :", header_value)
-
-    ngx.req.set_header("Authorization", "Bearer " .. user.access_token)
-
-    -- openidc.set_logging(nil, { DEBUG = ngx.INFO })
-
-    local res, err = openidc.introspect(opts)
-
-    user.res = res
-    user.err = err
-
-    if user.err then
-        ngx.log(ngx.WARN, "Introspection error :", user.err)
-    end
-
-    return user
-    
-end
 
 return openid

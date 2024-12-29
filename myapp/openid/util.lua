@@ -7,6 +7,57 @@ util.CACHE_KEY_ACCESS_TOKEN = "access_token"
 util.CACHE_KEY_ACCESS_EXPIRE = "access_token_expire"
 util.CACHE_KEY_REFRESH_TOKEN = "refresh_token"
 
+local config_dict = ngx.shared.config_dict
+
+local function validation_error(details)
+    exception.exception(ngx.HTTP_INTERNAL_SERVER_ERROR, "OpenID validation", details)
+end
+
+function util.common_validation() 
+    local config  = {}
+
+    config.discovery_url = config_dict:get("openid_discovery_url")
+    config.client_id = config_dict:get("openid_client_id")
+    config.client_secret = config_dict:get("openid_client_secret")
+    config.ssl_verify = config_dict:get("openid_ssl_verify")
+    config.token_validation_type = config_dict:get("openid_token_validation_type")
+    config.session_secret = config_dict:get("openid_session_secret")
+
+    if not config.discovery_url then
+        validation_error("openid discovery_url not configured")
+    end
+
+    if not config.client_id then
+        validation_error("openid client_id not configured")
+    end
+
+    if not config.client_secret then
+        validation_error("openid client_secret not configured")
+    end
+
+    if not config.token_validation_type then
+        validation_error("openid token_validation_type not configured")
+    end
+
+    if not config.ssl_verify then
+        validation_error("openid openid_ssl_verify not configured")
+    end
+
+    if not config.session_secret then
+        validation_error("openid session_secret not configured")
+    end
+
+
+    ngx.log(ngx.DEBUG, "discovery_url: ", config.discovery_url)
+    ngx.log(ngx.DEBUG, "token_validation_type: ", config.token_validation_type)
+    ngx.log(ngx.DEBUG, "client_id: ", config.client_id and "************" or "nil")
+    ngx.log(ngx.DEBUG, "client_secret: ", config.client_secret and "************" or "nil")
+    ngx.log(ngx.DEBUG, "session_secret: ", config.session_secret and "************" or "nil")
+    ngx.log(ngx.DEBUG, "ssl_verify: ", config.ssl_verify)
+
+    return config
+end
+
 function util.redis_set(sub, key, value, ttl)
     local redis_key = "openid:" .. sub .. ":" .. key
     redis.set(redis_key, cjson.encode(value), ttl)

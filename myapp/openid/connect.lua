@@ -1,6 +1,7 @@
 local openid_introspection = require("openid.introspection")
 local openid_authorisation_code = require("openid.authorisation_code")
 local exception = require("util.exception")
+local openid_util = require("openid.util")
 
 local cjson = require "cjson"
 
@@ -22,46 +23,11 @@ local function authenticate_failed_error(details)
     exception.exception(ngx.HTTP_FORBIDDEN, "Authorization failed", details)
 end
 
-local function validate() 
-
-    config.discovery_url = config_dict:get("openid_discovery_url")
-    config.client_id = config_dict:get("openid_client_id")
-    config.client_secret = config_dict:get("openid_client_secret")
-    config.flow_type = config_dict:get("openid_flow_type")
-    config.ssl_verify = config_dict:get("openid_ssl_verify")
-    
-
-    if not config.discovery_url then
-        validation_error("openid discovery_url not configured")
-    end
-
-    if not config.client_id then
-        validation_error("openid client_id not configured")
-    end
-
-    if not config.client_secret then
-        validation_error("openid client_secret not configured")
-    end
-
-    if not config.flow_type then
-        validation_error("openid flow_type not configured")
-    end
-
-    if not config.ssl_verify then
-        validation_error("openid openid_ssl_verify not configured")
-    end
-
-
-    ngx.log(ngx.DEBUG, "discovery_url: ", config.discovery_url)
-    ngx.log(ngx.DEBUG, "flow_type: ", config.flow_type)
-    ngx.log(ngx.DEBUG, "client_id: ", config.client_id and "************" or "nil")
-    ngx.log(ngx.DEBUG, "client_secret: ", config.client_secret and "************" or "nil")
-    ngx.log(ngx.DEBUG, "ssl_verify: ", config.ssl_verify)
-
-
+local function validate()
+    config = openid_util.common_validation()
 end
 
-function connect.authenticate()
+function connect.validate_token()
 
     ngx.log(ngx.DEBUG, "OpenID configured : ", config_dict:get("openid_configured"))
 
@@ -73,7 +39,7 @@ function connect.authenticate()
 
     end
 
-    ngx.log(ngx.INFO, "Authorizing .........")
+    ngx.log(ngx.INFO, "Validating token .........")
 
     validate()
 
@@ -91,17 +57,13 @@ function connect.authenticate()
 
     local status = nil
 
-    if(config.flow_type == "introspection") then
+    if(config.token_validation_type == "introspection") then
 
         status = openid_introspection.introspection(opts, config)
 
-    elseif(config.flow_type == "authorization_code") then
-
-        status = openid_authorisation_code.authenticate(opts, config)
-
     else
 
-        failed_error("Flow type not support : ", config.flow_type)
+        failed_error("token_validation_type not support : ", config.token_validation_type)
 
     end
 
@@ -121,7 +83,7 @@ function connect.authenticate()
     --     ngx.req.set_header("X-Roles", table.concat(status.response.realm_access.roles, ","))  -- example passing roles
     -- end
  
-    ngx.log(ngx.INFO, "Authorized!")
+    ngx.log(ngx.INFO, "Valid token!")
 
 end
 

@@ -48,6 +48,8 @@ end
 -- A function to return a greeting message
 function reverse_proxy.route()
 
+    ngx.log(ngx.INFO, "Route requesting --------------")
+
     local uri = ngx.var.uri
     
     ngx.log(ngx.DEBUG, "request uri : ", uri)
@@ -90,6 +92,8 @@ function reverse_proxy.route()
     
     ngx.say(res.body)
     ngx.exit(res.status)
+
+    ngx.log(ngx.INFO, "Routed request!!!")
 end
 
 -- Return the module table
