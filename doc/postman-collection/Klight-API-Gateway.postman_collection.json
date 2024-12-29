@@ -24,12 +24,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/item-service/items",
-									"protocol": "http",
+									"raw": "{{domain}}/item-service/items",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"item-service",
 										"items"
@@ -50,12 +48,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/item-service/actuator/info",
-									"protocol": "http",
+									"raw": "{{domain}}/item-service/actuator/info",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"item-service",
 										"actuator",
@@ -77,12 +73,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/item-service/actuator/health",
-									"protocol": "http",
+									"raw": "{{domain}}/item-service/actuator/health",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"item-service",
 										"actuator",
@@ -109,12 +103,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/order-service/orders",
-									"protocol": "http",
+									"raw": "{{domain}}/order-service/orders",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"order-service",
 										"orders"
@@ -135,12 +127,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/order-service/actuator/info",
-									"protocol": "http",
+									"raw": "{{domain}}/order-service/actuator/info",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"order-service",
 										"actuator",
@@ -162,12 +152,10 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:8080/order-service/actuator/health",
-									"protocol": "http",
+									"raw": "{{domain}}/order-service/actuator/health",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
 										"order-service",
 										"actuator",
@@ -183,20 +171,35 @@
 					"name": "Auth",
 					"item": [
 						{
+							"name": "Authoirse",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{domain}}/oauth2/authoirse",
+									"host": [
+										"{{domain}}"
+									],
+									"path": [
+										"oauth2",
+										"authoirse"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Callback",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:8080/klight-api-gateway/auth/callback",
-									"protocol": "http",
+									"raw": "{{domain}}/oauth2/callback",
 									"host": [
-										"localhost"
+										"{{domain}}"
 									],
-									"port": "8080",
 									"path": [
-										"klight-api-gateway",
-										"auth",
+										"oauth2",
 										"callback"
 									]
 								}

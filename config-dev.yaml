@@ -7,7 +7,7 @@ mongodb:
 openid:
   discovery_url: "http://127.0.0.1:8084/realms/klight-api-gateway/.well-known/openid-configuration"
   flow_type: authorization_code
-  ssl_verify: "no"
+  ssl_verify: "yes"
   token_validation: 
     type: introspection
     endpoint: http://127.0.0.1:8084/realms/klight-api-gateway/protocol/openid-connect/token/introspect
@@ -16,7 +16,7 @@ openid:
     validate_scope: true
     scope: "openid email profile"
     redirect_uri: "/oauth2/callback"
-    redirect_uri_scheme: http
+    redirect_uri_scheme: https
 
 redis:
   host: 127.0.0.1
