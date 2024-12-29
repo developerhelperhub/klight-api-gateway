@@ -7,6 +7,7 @@ local openid = {}
 local config_dict = ngx.shared.config_dict
 
 local config  = {}
+local connect_config = {}
 
 local function validation_error(details)
     exception.exception(ngx.HTTP_INTERNAL_SERVER_ERROR, "OpenID validation", details)
@@ -24,9 +25,11 @@ local function validate()
 
 end
 
-function openid.introspection(opts) 
+function openid.introspection(opts, config) 
 
     validate()
+
+    connect_config = config
     
     opts.introspection_endpoint = config.introspection_endpoint
     opts.introspection_expiry_claim = "exp"
@@ -39,5 +42,6 @@ function openid.introspection(opts)
     }
 
 end
+
 
 return openid
