@@ -59,17 +59,17 @@ function util.common_validation()
 end
 
 function util.redis_set(sub, key, value, ttl)
-    local redis_key = "openid:" .. sub .. ":" .. key
+    local redis_key = "kag_openid_session:" .. sub .. ":" .. key
     redis.set(redis_key, cjson.encode(value), ttl)
 end
 
 function util.redis_del(sub, key)
-    local redis_key = "openid:" .. sub .. ":" .. key
+    local redis_key = "kag_openid_session:" .. sub .. ":" .. key
     redis.del(redis_key)
 end
 
 function util.redis_get(sub, key)
-    local redis_key = "openid:" .. sub .. ":" .. key
+    local redis_key = "kag_openid_session:" .. sub .. ":" .. key
     local value = redis.get(redis_key)
     return value ~= nil and cjson.decode(value) or value
 end

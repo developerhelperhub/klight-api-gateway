@@ -6,3 +6,7 @@ openid:
   client_id: klight-api-gateway-openid-connect-authorize-code
   client_secret: iO2tmN0XvGfG7RpbANewVB78ZTZMPylP
   session_secret: "jjjjOjjl*nnnPPPPP767"
+
+redis:
+  username: klight-redis-user
+  password: klight-redis-pass

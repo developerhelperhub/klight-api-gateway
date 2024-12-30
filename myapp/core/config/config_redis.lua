@@ -28,6 +28,14 @@ function config.config(name, config)
             config_dict:set("redis_pool_size", main_config["pool_size"])
         end
 
+        if main_config["username"] ~= nil then
+            config_dict:set("redis_username", main_config["username"])
+        end
+
+        if main_config["password"] ~= nil then
+            config_dict:set("redis_password", main_config["password"])
+        end
+
         ngx.log(ngx.INFO, "Loaded Redis Config : ", name, "!")
         
         config_dict:set("redis_configured", true)
