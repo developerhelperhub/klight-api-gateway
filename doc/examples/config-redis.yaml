@@ -1,0 +1,9 @@
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  connection_timeout: 1000
+  pool_idle_timeout: 10000
+  pool_size: 100
+  username: klight-redis-user
+  password: klight-redis-pass

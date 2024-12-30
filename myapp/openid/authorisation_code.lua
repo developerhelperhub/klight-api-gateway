@@ -84,6 +84,7 @@ function openid.authenticate()
         -- ngx.log(ngx.DEBUG, "refresh_token: ", session:get("refresh_token"))
         -- ngx.log(ngx.DEBUG, "enc_id_token: ", session:get("enc_id_token"))
         -- ngx.log(ngx.DEBUG, "access_token: ", session:get("access_token"))
+
         local body = {
             access_token = session:get("access_token"),
             access_token_expiration = session:get("access_token_expiration"),

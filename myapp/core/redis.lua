@@ -26,6 +26,8 @@ local function validate_config()
     config.connection_timeout = config_dict:get("redis_connection_timeout")
     config.pool_idle_timeout = config_dict:get("redis_pool_idle_timeout")
     config.pool_size = config_dict:get("redis_pool_size")
+    config.username = config_dict:get("redis_username")
+    config.password = config_dict:get("redis_password")
 
     if not config.host then
         validation_error("redis host not configured")
@@ -47,11 +49,21 @@ local function validate_config()
         validation_error("redis pool_size not configured")
     end
 
+    if not config.username then
+        validation_error("redis username not configured")
+    end
+
+    if not config.password then
+        validation_error("redis password not configured")
+    end
+
     ngx.log(ngx.DEBUG, "redis host:", config.host)
     ngx.log(ngx.DEBUG, "redis port:", config.port)
     ngx.log(ngx.DEBUG, "redis connection_timeout:", config.connection_timeout)
     ngx.log(ngx.DEBUG, "redis pool_idle_timeout:", config.pool_idle_timeout)
     ngx.log(ngx.DEBUG, "redis pool_size:", config.pool_size)
+    ngx.log(ngx.DEBUG, "redis username: ", config.username and "*********" or "nil")
+    ngx.log(ngx.DEBUG, "redis password: ", config.password and "*********" or "nil")
 
 end
 
@@ -66,6 +78,12 @@ function redis.new_connection()
 
     if not ok then
         connection_error("failed to connect to Redis: " .. err)
+    end
+
+    local res, err = rds:auth(config.username, config.password)
+    
+    if not res then
+        connection_error("Failed to authenticate to Redis: " .. err)
     end
 
     ngx.ctx.redis = rds
