@@ -7,7 +7,7 @@ mongodb:
   connection_pool_size: 1
 
 openid:
-  discovery_url: "http://127.0.0.1:8084/realms/klight-api-gateway/.well-known/openid-configuration"
+  discovery_url: "http://127.0.0.1:8080/realms/klight-api-gateway/.well-known/openid-configuration"
   client_id: klight-api-gateway-openid-connect-authorize-code
   client_secret: iO2tmN0XvGfG7RpbANewVB78ZTZMPylP
   flow_type: authorization_code
@@ -15,7 +15,7 @@ openid:
   session_secret: "jjjjOjjl*nnnPPPPP767"
   token_validation: 
     type: introspection
-    endpoint: http://127.0.0.1:8084/realms/klight-api-gateway/protocol/openid-connect/token/introspect
+    endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
 
 redis:
   host: 127.0.0.1

@@ -1,0 +1,55 @@
+services:
+  mongodb:
+    image: amd64/mongo:8.0.3
+    container_name: klight-mongodb-service
+    ports:
+      - "27017:27017" 
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: klight-api-gateway
+      MONGO_INITDB_ROOT_PASSWORD: klight-api-gateway
+    restart: unless-stopped
+    networks:
+      - api-gateway-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: klight-keycloak-service
+    ports:
+      - "8080:8080" 
+    environment:
+      KC_HOSTNAME: klight-keycloak-service
+      KC_HOSTNAME_DEBUG: true
+      KC_HOSTNAME_STRICT: true
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: false
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+      KC_LOG_LEVEL: info
+    command: start-dev
+    restart: unless-stopped
+    networks:
+      - api-gateway-network
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: klight-redis-service
+    ports:
+      - "6379:6379" 
+    command: redis-server --save 60 1 --loglevel warning --requirepass "redis-mas-pass"
+    restart: unless-stopped
+    networks:
+      - api-gateway-network
+  klight-api-gateway:
+    image: klight/api-gateway
+    container_name: klight-api-gateway-service
+    ports:
+      - "8081:8081" 
+    depends_on:
+      - redis
+      - mongodb
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - api-gateway-network
+
+networks:
+  api-gateway-network:
+    driver: bridge

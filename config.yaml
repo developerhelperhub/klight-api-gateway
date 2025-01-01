@@ -1,25 +1,25 @@
 mongodb:
-  host: localhost
+  host: klight-mongodb-service
   port: 27017
   db: klight-api-gateway
   connection_pool_size: 1
 
 openid:
-  discovery_url: "http://127.0.0.1:8080/realms/klight-api-gateway/.well-known/openid-configuration"
+  discovery_url: "http://klight-keycloak-service:8080/realms/klight-api-gateway/.well-known/openid-configuration"
   flow_type: authorization_code
-  ssl_verify: "yes"
+  ssl_verify: "no"
   token_validation: 
     type: introspection
-    endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
+    endpoint: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
   authentication:
     flow_type: authorization_code
     validate_scope: true
     scope: "openid email profile"
     redirect_uri: "/oauth2/callback"
-    redirect_uri_scheme: https
+    redirect_uri_scheme: http
 
 redis:
-  host: 127.0.0.1
+  host: klight-redis-service
   port: 6379
   connection_timeout: 1000
   pool_idle_timeout: 10000
