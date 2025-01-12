@@ -1,0 +1,40 @@
+services:
+  mongodb:
+    image: amd64/mongo:8.0.3
+    container_name: klight-mongodb-service
+    ports:
+      - "27017:27017" 
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: klight-api-gateway
+      MONGO_INITDB_ROOT_PASSWORD: klight-api-gateway
+    restart: unless-stopped
+  keycloack:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: klight-keycloack-service
+    ports:
+      - "8080:8080" 
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command: start-dev
+    restart: unless-stopped
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: klight-redis-service
+    ports:
+      - "6379:6379" 
+    command: redis-server --bind 0.0.0.0 --save 60 1 --loglevel warning --requirepass "redis-mas-pass"
+    restart: unless-stopped
+  klight-api-gateway:
+    image: klight/api-gateway
+    container_name: klight-api-gateway-service
+    entrypoint: /bin/sh # Set /bin/sh as the entrypoint
+    stdin_open: true    # Keep stdin open for interactive shell
+    tty: true           # Allocate a pseudo-TTY
+    ports:
+      - "8081:8081" 
+    depends_on:
+      - redis
+      - mongodb
+      - keycloack
+    restart: unless-stopped
