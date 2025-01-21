@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klight-api-gateway
+spec:
+  replicas: 2 # Number of pods to run
+  selector:
+    matchLabels:
+      app: klight-api-gateway
+      type: klight
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: klight-api-gateway
+        type: klight
+        env: dev
+        version: 1.0.0.1-SNAPSHOT
+    spec:
+      containers:
+        - name: klight-api-gateway
+          image: klight/api-gateway  # Docker image and Update to a new version of the image
+          ports:
+            - containerPort: 8081
