@@ -2,6 +2,7 @@ local openid_introspection = require("openid.introspection")
 local openid_authorisation_code = require("openid.authorisation_code")
 local exception = require("util.exception")
 local openid_util = require("openid.util")
+local auth_discovery = require("openid.discovery")
 
 local cjson = require "cjson"
 
@@ -42,6 +43,8 @@ function connect.validate_token()
     ngx.log(ngx.INFO, "Validating token .........")
 
     validate()
+
+    local discovery = auth_discovery.discovery(config)
 
     config.proxy_opts = nil
     config.token_signing_alg_values_supported = {"RS256"}

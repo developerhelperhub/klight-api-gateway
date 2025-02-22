@@ -8,8 +8,42 @@ function config.config(name, config)
 
     if openid ~= nil then
 
-        if openid["discovery_url"] ~= nil then
-            config_dict:set("openid_discovery_url", openid["discovery_url"])
+        local discovery = openid["discovery"]
+
+        if discovery ~= nil then
+
+            if discovery["url"] ~= nil then
+                config_dict:set("openid_discovery_url", discovery["url"])
+            end
+
+            if discovery["token_endpoint"] ~= nil then
+                config_dict:set("openid_discovery_token_endpoint", discovery["token_endpoint"])
+            end
+
+            if discovery["issuer"] ~= nil then
+                config_dict:set("openid_discovery_issuer", discovery["issuer"])
+            end
+
+            if discovery["authorization_endpoint"] ~= nil then
+                config_dict:set("openid_discovery_authorization_endpoint", discovery["authorization_endpoint"])
+            end
+
+            if discovery["jwks_uri"] ~= nil then
+                config_dict:set("openid_discovery_jwks_uri", discovery["jwks_uri"])
+            end
+
+            if discovery["userinfo_endpoint"] ~= nil then
+                config_dict:set("openid_discovery_userinfo_endpoint", discovery["userinfo_endpoint"])
+            end
+
+            if discovery["introspection_endpoint"] ~= nil then
+                config_dict:set("openid_discovery_introspection_endpoint", discovery["introspection_endpoint"])
+            end
+
+            if discovery["end_session_endpoint"] ~= nil then
+                config_dict:set("openid_discovery_end_session_endpoint", discovery["end_session_endpoint"])
+            end
+
         end
 
         if openid["client_id"] ~= nil then
@@ -40,7 +74,6 @@ function config.config(name, config)
             ngx.log(ngx.DEBUG, "openid_token_validation_type : ", token_validation["type"])
 
             config_dict:set("openid_token_validation_type", token_validation["type"])
-            config_dict:set("openid_introspection_endpoint", token_validation["endpoint"])
 
         end
 
