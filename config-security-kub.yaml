@@ -4,7 +4,7 @@ mongodb:
 
 openid:
   client_id: klight-api-gateway-openid-connect-authorize-code
-  client_secret: OjhjwbliF4kmyw9KfqUdmQAUQXcvquH7
+  client_secret: LXMpQ6HV5sQClXblnPteEbPt8Tie8iZk
   session_secret: "jjjjOjjl*nnnPPPPP767"
 
 redis:

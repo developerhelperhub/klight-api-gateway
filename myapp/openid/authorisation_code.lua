@@ -1,5 +1,6 @@
 local openidc = require("resty.openidc")
 local exception = require("util.exception")
+local auth_discovery = require("openid.discovery")
 local r_session = require("openid.session")
 local util = require("openid.util")
 local http = require "resty.http"
@@ -50,8 +51,18 @@ function openid.authenticate()
 
     validate_auth()
 
+    local discovery = auth_discovery.discovery(config)
+
+    local local_discovery = {
+        discovery_url = config.discovery_url,
+        token_endpoint = discovery.token_endpoint,
+        issuer = discovery.issuer,
+        authorization_endpoint = discovery.authorization_endpoint,
+        jwks_uri = discovery.jwks_uri
+    }
+
     local opts = {
-        discovery = config.discovery_url,
+        discovery = local_discovery,
         client_id = config.client_id,
         client_secret = config.client_secret,
         token_signing_alg_values_supported = {"RS256"},
@@ -141,8 +152,18 @@ function openid.redirect_authenticate()
 
     validate_redirect_auth()
 
+    local discovery = auth_discovery.discovery(config)
+
+    local local_discovery = {
+        discovery_url = config.discovery_url,
+        token_endpoint = discovery.token_endpoint,
+        issuer = discovery.issuer,
+        authorization_endpoint = discovery.authorization_endpoint,
+        jwks_uri = discovery.jwks_uri
+    }
+
     local opts = {
-        discovery = config.discovery_url,
+        discovery = local_discovery,
         client_id = config.client_id,
         client_secret = config.client_secret,
         redirect_uri = config.redirect_uri,

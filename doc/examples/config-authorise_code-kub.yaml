@@ -1,0 +1,36 @@
+mongodb:
+  host: localhost
+  port: 27017
+  db: klight-api-gateway
+  username: klight-api-gateway
+  password: klight-api-gateway
+  connection_pool_size: 1
+
+openid:
+  discovery:
+    url: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/.well-known/openid-configuration
+    token_endpoint: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/token
+    issuer: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway
+    authorization_endpoint: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/auth
+    jwks_uri: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/certs
+    userinfo_endpoint: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/userinfo
+    introspection_endpoint: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
+    end_session_endpoint: http://keycloak.microservices.svc.cluster.local:8080/realms/klight-api-gateway/protocol/openid-connect/logout
+    
+  flow_type: authorization_code
+  ssl_verify: "yes"
+  token_validation: 
+    type: introspection
+  authentication:
+    flow_type: authorization_code
+    validate_scope: true
+    scope: "openid email profile"
+    redirect_uri: "/oauth2/callback"
+    redirect_uri_scheme: http
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  connection_timeout: 1000
+  pool_idle_timeout: 10000
+  pool_size: 100

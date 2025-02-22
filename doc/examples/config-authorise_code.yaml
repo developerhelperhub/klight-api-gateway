@@ -7,21 +7,26 @@ mongodb:
   connection_pool_size: 1
 
 openid:
-  discovery_url: "http://127.0.0.1:8080/realms/klight-api-gateway/.well-known/openid-configuration"
-  client_id: klight-api-gateway-openid-connect-authorize-code
-  client_secret: iO2tmN0XvGfG7RpbANewVB78ZTZMPylP
+  discovery:
+    url: http://127.0.0.1:8080/realms/klight-api-gateway/.well-known/openid-configuration
+    token_endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/token
+    issuer: http://127.0.0.1:8080/realms/klight-api-gateway
+    authorization_endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/auth
+    jwks_uri: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/certs
+    userinfo_endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/userinfo
+    introspection_endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
+    end_session_endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/logout
+
   flow_type: authorization_code
   ssl_verify: "yes"
-  session_secret: "jjjjOjjl*nnnPPPPP767"
   token_validation: 
     type: introspection
-    endpoint: http://127.0.0.1:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
   authentication:
     flow_type: authorization_code
     validate_scope: true
     scope: "openid email profile"
     redirect_uri: "/oauth2/callback"
-    redirect_uri_scheme: https
+    redirect_uri_scheme: http
 
 redis:
   host: 127.0.0.1

@@ -1,6 +1,6 @@
 Build the image 
 ```shell
-docker build -f docker/Dockerfile -t klight/api-gateway .
+docker build -f docker/Dockerfile -t kublight/api-gateway .
 ```
 
 Create the network for api gateway service
@@ -16,7 +16,7 @@ docker-compose up -d
 
 Test Application
 ```shell
-#docker run -d -it --name klight-api-gateway -p 8081:8081 -v ${HOME}:/root/ -v ${PWD}:/app -w /app klight/api-gateway
+docker run -d -it --name klight-api-gateway -p 8081:8081 -v ${HOME}:/root/ -v ${PWD}:/app -w /app kublight/api-gateway
 #or following command to login into container if already running the container
 
 docker exec -it klight-api-gateway-service /bin/sh

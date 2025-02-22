@@ -17,6 +17,14 @@ function util.common_validation()
     local config  = {}
 
     config.discovery_url = config_dict:get("openid_discovery_url")
+    config.discovery_token_endpoint = config_dict:get("openid_discovery_token_endpoint")
+    config.discovery_issuer = config_dict:get("openid_discovery_issuer")
+    config.discovery_authorization_endpoint = config_dict:get("openid_discovery_authorization_endpoint")
+    config.discovery_jwks_uri = config_dict:get("openid_discovery_jwks_uri")
+    config.discovery_userinfo_endpoint = config_dict:get("openid_discovery_userinfo_endpoint")
+    config.discovery_introspection_endpoint = config_dict:get("openid_discovery_introspection_endpoint")
+    config.discovery_end_session_endpoint = config_dict:get("openid_discovery_end_session_endpoint")
+
     config.client_id = config_dict:get("openid_client_id")
     config.client_secret = config_dict:get("openid_client_secret")
     config.ssl_verify = config_dict:get("openid_ssl_verify")

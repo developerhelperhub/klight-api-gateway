@@ -5,7 +5,16 @@ mongodb:
   connection_pool_size: 1
 
 openid:
-  discovery_url: "http://klight-keycloak-service:8080/realms/klight-api-gateway/.well-known/openid-configuration"
+  discovery:
+    url: "http://klight-keycloak-service:8080/realms/klight-api-gateway/.well-known/openid-configuration"
+    token_endpoint: "http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/token"
+    issuer: http://klight-keycloak-service:8080/realms/klight-api-gateway
+    authorization_endpoint: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/auth
+    jwks_uri: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/certs
+    userinfo_endpoint: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/userinfo
+    introspection_endpoint: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/token/introspect
+    end_session_endpoint: http://klight-keycloak-service:8080/realms/klight-api-gateway/protocol/openid-connect/logout
+
   flow_type: authorization_code
   ssl_verify: "no"
   token_validation: 
